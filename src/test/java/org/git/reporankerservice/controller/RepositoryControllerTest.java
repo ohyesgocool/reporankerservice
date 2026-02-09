@@ -1,35 +1,57 @@
 package org.git.reporankerservice.controller;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
+import org.git.reporankerservice.model.RepositoryRequest;
+import org.git.reporankerservice.model.RepositoryResponse;
+import org.git.reporankerservice.service.RepositoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 0, stubs = "classpath:/wiremock/mappings")
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@WebFluxTest(RepositoryController.class)
 class RepositoryControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
+
+    @MockBean
+    private RepositoryService repositoryService;
 
     @Test
-    void shouldGetRepositories() throws Exception {
-        stubFor(WireMock.get(urlPathEqualTo("/search/repositories"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("github-response.json")));
+    void getRepositories_shouldReturnRepositories_whenSuccessful() {
+        // Given
+        RepositoryResponse expectedResponse = new RepositoryResponse(Collections.emptyList());
+        when(repositoryService.getRepositories(any(RepositoryRequest.class)))
+                .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
-        mockMvc.perform(get("/api/repositories/search")
-                        .param("createdFrom", "2022-01-01")
-                        .param("language", "java"))
-                .andExpect(status().isOk());
+        // When & Then
+        webTestClient.get()
+                .uri("/api/v1/repositories/search?language=java")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(RepositoryResponse.class)
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    void getRepositories_shouldReturnEmpty_whenServiceThrowsException() {
+        // Given
+        when(repositoryService.getRepositories(any(RepositoryRequest.class)))
+                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Service Error")));
+
+        // When & Then
+        webTestClient.get()
+                .uri("/api/v1/repositories/search?language=java")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(RepositoryResponse.class)
+                .isEqualTo(new RepositoryResponse(Collections.emptyList()));
     }
 }
