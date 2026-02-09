@@ -1,0 +1,16 @@
+{
+  "total_count": 1,
+  "incomplete_results": false,
+  "items": [
+    {
+      "id": 12345,
+      "name": "test-repo",
+      "owner": {
+        "login": "test-owner"
+      },
+      "stargazers_count": 100,
+      "forks_count": 50,
+      "pushed_at": "2024-05-20T10:00:00Z"
+    }
+  ]
+}
