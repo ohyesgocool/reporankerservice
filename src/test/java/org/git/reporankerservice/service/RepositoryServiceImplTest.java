@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -53,8 +52,8 @@ class RepositoryServiceImplTest {
 
         // Then
         assertEquals(1, response.repositories().size());
-        assertEquals("test-repo", response.repositories().get(0).name());
-        assertTrue(response.repositories().get(0).score() > 150); // stars + forks + recency
+        assertEquals("test-repo", response.repositories().getFirst().name());
+        assertTrue(response.repositories().getFirst().score() > 150); // stars + forks + recency
     }
 
     @Test

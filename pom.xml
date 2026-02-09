@@ -30,7 +30,6 @@
         <java.version>21</java.version>
         <springdoc-openapi.version>2.5.0</springdoc-openapi.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
-        <wiremock.version>3.0.1</wiremock.version>
     </properties>
     <dependencies>
         <dependency>
@@ -80,14 +79,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wiremock</groupId>
-            <artifactId>wiremock-jupiter-extension</artifactId>
-            <version>${wiremock.version}</version>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.12.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

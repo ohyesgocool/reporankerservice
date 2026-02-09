@@ -47,6 +47,7 @@ public class WebClientGitHubClient implements GitHubClient {
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, clientResponse ->
                         clientResponse.bodyToMono(String.class)
+                                .defaultIfEmpty("")
                                 .flatMap(body -> {
                                     LOGGER.error("Error from GitHub API: status code {} and body {}", clientResponse.statusCode(), body);
                                     return Mono.error(new RuntimeException("Error from GitHub API. Status: " + clientResponse.statusCode()));
